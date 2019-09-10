@@ -10,11 +10,31 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
+      debugShowCheckedModeBanner: false,
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: MyHomePage(title: 'Word App'),
+      home: DefaultTabController(
+        length: 2,
+        child: Scaffold(
+          appBar: AppBar(
+            bottom: TabBar(
+              tabs: [
+              Tab(icon: Icon(Icons.today)),
+              Tab(icon: Icon(Icons.list)),
+          ],
+            ),
+
+            title: Text('Word App'),
+      ),
+          body: TabBarView(
+            children: [
+              Icon(Icons.today),
+              MyHomePage()
+            ]
+          )
+        ),
+    )
     );
   }
 }
@@ -27,10 +47,7 @@ class API {
 }
 
 class MyHomePage extends StatefulWidget {
-  MyHomePage({Key key, this.title}) : super(key: key);
-
-  final String title;
-
+  MyHomePage({ Key key }) : super(key: key);
   @override
   _MyHomePageState createState() => _MyHomePageState();
 }
@@ -65,19 +82,14 @@ class _MyHomePageState extends State<MyHomePage> {
   build(context) {
 
     return Scaffold(
-      appBar: AppBar(
-
-        title: Text(widget.title),
-      ),
       body: Container(
-
         child:
-//        words == null ? Center(child: CircularProgressIndicator(valueColor: AlwaysStoppedAnimation<Color>(Colors.black))) : Text("${words.first.word} - ${words.first.definition}"))
-          words == null ? Center(child: CircularProgressIndicator(valueColor: AlwaysStoppedAnimation<Color>(Colors.black))) :
+          words == null ? Center(child: CircularProgressIndicator(valueColor: AlwaysStoppedAnimation<Color>(Colors.blue))) :
           ListView.builder(itemCount: words.length,
                   itemBuilder: (context, index) {
             return _buildItem(words[index]);
     })
+    )
     );
   }
 }
