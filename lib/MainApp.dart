@@ -22,23 +22,15 @@ class _MainAppState extends State<MainApp> {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-      ),
+      theme: ThemeData.dark(),
       home: DefaultTabController(
         length: 2,
         child: Scaffold(
-          body: pages[index],
-            appBar: AppBar(
-              title: Text("Word App"),
-            ),
-//            body: TabBarView(
-//                children: [
-//                  WordCardController(),
-//                  WordListController()
-//                ]
-//            ),
+          backgroundColor: Colors.black,
+          body: SafeArea(
+            child: pages[index]),
             bottomNavigationBar: BottomNavigationBar(
+              backgroundColor: Colors.black,
                 items: [
                   BottomNavigationBarItem(
                     icon: Icon(Icons.today),
