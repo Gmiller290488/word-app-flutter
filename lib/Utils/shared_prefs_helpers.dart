@@ -20,8 +20,6 @@ class SharedPrefsHelper {
   static Future<bool> appWasOpenedToday() async {
      String dateLastOpened = await readDateLastOpened();
      String dateNow = formatDate(DateTime.now(), [dd, '.', mm, '.', yy]);
-     print(dateLastOpened);
-     print(dateNow);
      return dateNow == dateLastOpened;
   }
 

@@ -182,12 +182,12 @@ class _WordCardControllerState extends State<WordCardController> {
       print("app was opened");
 
     } else {
-      await Future.delayed(const Duration(seconds: 3), () {});
+      await Future.delayed(const Duration(milliseconds: 1), () {});
       print("app wasn't opened");
       List<WordJson> dbWords = await helper.queryAllWords();
         final _random = new Random();
 
-        int randomNum = 1 + _random.nextInt(dbWords.length - 1);
+        int randomNum = 0 + _random.nextInt(dbWords.length - 1);
         word = dbWords[randomNum];
         SharedPrefsHelper.updateTodaysWord(word.id);
       }
