@@ -94,6 +94,12 @@ class _MainAppState extends State<MainApp> {
       });
     });
   }
+
+//  _pickWordOfDay(List<WordJson> wordsList) {
+//    final _random = new Random();
+//    int randomNum = 1 + _random.nextInt(wordsList.length - 1);
+//    return wordsList[randomNum];
+//  }
 }
 
 

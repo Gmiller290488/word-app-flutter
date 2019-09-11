@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 import 'Model/WordJson.dart';
-import 'Networking/NetworkCalls.dart';
-import 'dart:convert';
 import 'Utils/database_helpers.dart';
 
 class WordListController extends StatefulWidget {
@@ -11,21 +9,19 @@ class WordListController extends StatefulWidget {
 }
 
 class _WordListControllerState extends State<WordListController> {
-
   DatabaseHelper helper = DatabaseHelper.instance;
   List<WordJson> wordsJson;
   List<Word> words;
 
   _readFromDb() async {
-
-    setState(() async {
-      words = await helper.queryAllWords();
+    List<Word> dbWords = await helper.queryAllWords();
+    setState(() {
+      words = dbWords;
     });
   }
 
   initState() {
     super.initState();
-//    _getWords();
     _readFromDb();
   }
 

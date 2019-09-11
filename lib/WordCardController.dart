@@ -1,17 +1,24 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'Utils/database_helpers.dart';
+import 'dart:math';
 
 class WordCardController extends StatefulWidget {
+
   @override
   _WordCardControllerState createState() => _WordCardControllerState();
 }
 
 class _WordCardControllerState extends State<WordCardController> {
+
+  DatabaseHelper helper = DatabaseHelper.instance;
   bool _isWordAdded;
+  Word wordOfTheDay;
 
   @override
   void initState() {
+    super.initState();
     _isWordAdded = false;
+    _fetchRandomWord();
   }
 
   @override
@@ -24,8 +31,9 @@ class _WordCardControllerState extends State<WordCardController> {
                 ),
                 child:
                 ClipRRect(
-                    borderRadius: BorderRadius.vertical(top: Radius.circular(10)),
-                    child: Column(
+                    borderRadius: BorderRadius.vertical(
+                        top: Radius.circular(10)),
+                    child: (wordOfTheDay != null) ? Column(
                         mainAxisSize: MainAxisSize.max,
                         children: <Widget>[
                           Container(
@@ -45,7 +53,8 @@ class _WordCardControllerState extends State<WordCardController> {
                             ),
                           ),
                           ListTile(
-                            title: Text("Bulwark",
+//                            title: Text("Bulwark",
+                            title: Text(wordOfTheDay.word,
                                 textAlign: TextAlign.center,
                                 style: TextStyle(
                                   fontSize: 40.0,
@@ -60,7 +69,14 @@ class _WordCardControllerState extends State<WordCardController> {
                                       color: Colors.white
                                   ),
                                   children: <TextSpan>[
-                                    TextSpan(text: '\nA defensive wall',
+//                                    TextSpan(text: '\nA defensive wall',
+                                    TextSpan(text: '\n',
+                                        style: TextStyle(
+                                            fontSize: 20.0,
+                                            color: Colors.white70
+                                        )
+                                    ),
+                                    TextSpan(text: wordOfTheDay.definition,
                                         style: TextStyle(
                                             fontSize: 20.0,
                                             color: Colors.white70
@@ -70,49 +86,50 @@ class _WordCardControllerState extends State<WordCardController> {
                                 ),
                               )
                           ),
-                          Spacer(),
-                          ListTile(
-                              title: RichText(
-                                text: TextSpan(
-                                  text: "Usage: ",
-                                  style: TextStyle(
-                                      color: Colors.white
-                                  ),
-                                  children: <TextSpan>[
-                                    TextSpan(
-                                        text: '\nSyracuse was for fifty years, not only, as of old, the bulwark of Europe, but the bulwark of Christendom.',
-                                        style: TextStyle(
-                                            fontSize: 20.0,
-                                            color: Colors.white70
-                                        )
-                                    ),
-                                  ],
-                                ),
-                              )
-                          ),
-                          Spacer(),
-                          ListTile(
-                              title: RichText(
-                                text: TextSpan(
-                                  text: "Synonyms: ",
-                                  style: TextStyle(
-                                      color: Colors.white
-                                  ),
-                                  children: <TextSpan>[
-                                    TextSpan(
-                                        text: '\nwall, rampart, fortification, parapet, stockade, palisade, barricade, embankment, earthwork',
-                                        style: TextStyle(
-                                            fontSize: 20.0,
-                                            color: Colors.white70
-                                        )
-                                    ),
-                                  ],
-                                ),
-                              )
-                          ),
+//                          Spacer(),
+//                          ListTile(
+//                              title: RichText(
+//                                text: TextSpan(
+//                                  text: "Usage: ",
+//                                  style: TextStyle(
+//                                      color: Colors.white
+//                                  ),
+//                                  children: <TextSpan>[
+//                                    TextSpan(
+//                                        text: '\nSyracuse was for fifty years, not only, as of old, the bulwark of Europe, but the bulwark of Christendom.',
+//                                        style: TextStyle(
+//                                            fontSize: 20.0,
+//                                            color: Colors.white70
+//                                        )
+//                                    ),
+//                                  ],
+//                                ),
+//                              )
+//                          ),
+//                          Spacer(),
+//                          ListTile(
+//                              title: RichText(
+//                                text: TextSpan(
+//                                  text: "Synonyms: ",
+//                                  style: TextStyle(
+//                                      color: Colors.white
+//                                  ),
+//                                  children: <TextSpan>[
+//                                    TextSpan(
+//                                        text: '\nwall, rampart, fortification, parapet, stockade, palisade, barricade, embankment, earthwork',
+//                                        style: TextStyle(
+//                                            fontSize: 20.0,
+//                                            color: Colors.white70
+//                                        )
+//                                    ),
+//                                  ],
+//                                ),
+//                              )
+//                          ),
                           Spacer(),
                           ClipRRect(
-                              borderRadius: BorderRadius.vertical(bottom: Radius.circular(10)),
+                              borderRadius: BorderRadius.vertical(
+                                  bottom: Radius.circular(10)),
                               child:
                               Column(
                                 mainAxisSize: MainAxisSize.max,
@@ -123,7 +140,8 @@ class _WordCardControllerState extends State<WordCardController> {
                                       child:
                                       Row(
                                           mainAxisSize: MainAxisSize.max,
-                                          mainAxisAlignment: MainAxisAlignment.center,
+                                          mainAxisAlignment: MainAxisAlignment
+                                              .center,
                                           children: <Widget>[
                                             Text("ADD TO YOUR WORD LIST?"),
                                             Switch(
@@ -141,11 +159,23 @@ class _WordCardControllerState extends State<WordCardController> {
                               )
                           )
                         ]
-                    )
+                    ) : Center(child: CircularProgressIndicator(valueColor: AlwaysStoppedAnimation<Color>(Colors.blue)))
                 )
             )
         )
     );
+  }
+
+  _fetchRandomWord() async {
+    DatabaseHelper helper = DatabaseHelper.instance;
+    List<Word> dbWords = await helper.queryAllWords();
+    final _random = new Random();
+    int randomNum = 1 + _random.nextInt(dbWords.length - 1);
+    print(dbWords[randomNum]);
+    setState(() {
+      wordOfTheDay = dbWords[randomNum];
+    });
+
   }
 }
 
