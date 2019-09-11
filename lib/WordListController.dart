@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'Model/WordJson.dart';
+import 'Utils/WordJson.dart';
 import 'Utils/database_helpers.dart';
 
 class WordListController extends StatefulWidget {
@@ -11,10 +11,10 @@ class WordListController extends StatefulWidget {
 class _WordListControllerState extends State<WordListController> {
   DatabaseHelper helper = DatabaseHelper.instance;
   List<WordJson> wordsJson;
-  List<Word> words;
+  List<WordJson> words;
 
   _readFromDb() async {
-    List<Word> dbWords = await helper.queryAllWords();
+    List<WordJson> dbWords = await helper.queryAllWords();
     setState(() {
       words = dbWords;
     });
@@ -35,14 +35,14 @@ class _WordListControllerState extends State<WordListController> {
     return Scaffold(
         body: Container(
             child:
-            FutureBuilder<List<Word>>(
+            FutureBuilder<List<WordJson>>(
                 future: helper.queryAllWords(),
-                builder: (BuildContext context, AsyncSnapshot<List<Word>> snapshot) {
+                builder: (BuildContext context, AsyncSnapshot<List<WordJson>> snapshot) {
                   if (snapshot.hasData) {
                     return ListView.builder(
                         itemCount: words.length,
                         itemBuilder: (BuildContext context, int index) {
-                          Word item = snapshot.data[index];
+                          WordJson item = snapshot.data[index];
                           return ListTile(
                             title: Text(item.word),
 

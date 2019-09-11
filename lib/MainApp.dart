@@ -1,10 +1,13 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'WordListController.dart';
 import 'WordCardController.dart';
 import 'Networking/NetworkCalls.dart';
-import 'Model/WordJson.dart';
+import 'Utils/WordJson.dart';
 import 'Utils/database_helpers.dart';
 import 'dart:convert';
+import 'Utils/shared_prefs_helpers.dart';
 
 void main() => runApp(MainApp());
 
@@ -15,17 +18,15 @@ class MainApp extends StatefulWidget {
   _MainAppState createState() => _MainAppState();
 }
 
-
 class _MainAppState extends State<MainApp> {
 
   @override
   void initState() {
     super.initState();
     _getWords();
-
+    SharedPrefsHelper.updateDateLastOpened();
   }
 
-  DatabaseHelper helper = DatabaseHelper.instance;
   int index = 0;
   var pages = [
     WordCardController(),
@@ -68,38 +69,27 @@ class _MainAppState extends State<MainApp> {
     );
   }
 
-
-
   static List<WordJson> parseWords(String responseBody) {
     final parsed = json.decode(responseBody).cast<Map<String, dynamic>>();
-    return parsed.map<WordJson>((json) => WordJson.fromJson(json)).toList();
+    var list = parsed.map<WordJson>((json) => WordJson.fromJson(json)).toList();
+    print(list);
+    return list;
   }
 
   _saveWordToDb(WordJson wordJson) async {
-    Word word = Word();
-    word.word = wordJson.word;
-    word.definition = wordJson.definition;
-    await helper.insert(word);
-    print("word saved: $word");
+    DatabaseHelper helper = DatabaseHelper.instance;
+    await helper.insert(wordJson);
   }
 
-  _getWords() {
+  _getWords() async {
+
     NetworkCalls.getWords().then((response) {
-      setState(() {
         List<WordJson> wordsJson = parseWords(response.body);
-        helper.deleteAll();
         for (WordJson word in wordsJson) {
-          _saveWordToDb(word);
-        }
-      });
+            _saveWordToDb(word);
+          }
     });
   }
-
-//  _pickWordOfDay(List<WordJson> wordsList) {
-//    final _random = new Random();
-//    int randomNum = 1 + _random.nextInt(wordsList.length - 1);
-//    return wordsList[randomNum];
-//  }
 }
 
 

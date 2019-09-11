@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'Utils/database_helpers.dart';
 import 'dart:math';
+import 'Utils/shared_prefs_helpers.dart';
+import 'Utils/WordJson.dart';
 
 class WordCardController extends StatefulWidget {
 
@@ -12,7 +14,7 @@ class _WordCardControllerState extends State<WordCardController> {
 
   DatabaseHelper helper = DatabaseHelper.instance;
   bool _isWordAdded;
-  Word wordOfTheDay;
+  WordJson wordOfTheDay;
 
   @override
   void initState() {
@@ -168,14 +170,31 @@ class _WordCardControllerState extends State<WordCardController> {
 
   _fetchRandomWord() async {
     DatabaseHelper helper = DatabaseHelper.instance;
-    List<Word> dbWords = await helper.queryAllWords();
-    final _random = new Random();
-    int randomNum = 1 + _random.nextInt(dbWords.length - 1);
-    print(dbWords[randomNum]);
-    setState(() {
-      wordOfTheDay = dbWords[randomNum];
-    });
+    int wordId;
+    WordJson word;
 
+    bool appOpenedToday = await SharedPrefsHelper.appWasOpenedToday();
+    print(appOpenedToday);
+
+    if (appOpenedToday) {
+      wordId = await SharedPrefsHelper.getTodaysWord();
+      word = await helper.queryWordById(wordId);
+      print("app was opened");
+
+    } else {
+      await Future.delayed(const Duration(seconds: 3), () {});
+      print("app wasn't opened");
+      List<WordJson> dbWords = await helper.queryAllWords();
+        final _random = new Random();
+
+        int randomNum = 1 + _random.nextInt(dbWords.length - 1);
+        word = dbWords[randomNum];
+        SharedPrefsHelper.updateTodaysWord(word.id);
+      }
+
+    setState(() {
+      wordOfTheDay = word;
+    });
   }
 }
 
