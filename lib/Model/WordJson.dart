@@ -1,12 +1,12 @@
-class Word {
+class WordJson {
   int id;
   String word;
   String definition;
 
-  Word({ this.id, this.word, this.definition });
+  WordJson({ this.id, this.word, this.definition });
 
-  factory Word.fromJson(Map<String, dynamic> parsedJson) {
-    return Word(
+  factory WordJson.fromJson(Map<String, dynamic> parsedJson) {
+    return WordJson(
       id: parsedJson["id"],
       word: parsedJson["word"],
       definition: parsedJson["definition"]

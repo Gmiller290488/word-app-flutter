@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
-import 'Model/word.dart';
+import 'Model/WordJson.dart';
 import 'Networking/NetworkCalls.dart';
 import 'dart:convert';
+import 'Utils/database_helpers.dart';
 
 class WordListController extends StatefulWidget {
   WordListController({ Key key }) : super(key: key);
@@ -11,24 +12,21 @@ class WordListController extends StatefulWidget {
 
 class _WordListControllerState extends State<WordListController> {
 
+  DatabaseHelper helper = DatabaseHelper.instance;
+  List<WordJson> wordsJson;
   List<Word> words;
 
-  _getWords() {
-    NetworkCalls.getWords().then((response) {
-      setState(() {
-        words = parseWords(response.body);
-      });
-    });
-  }
+  _readFromDb() async {
 
-  static List<Word> parseWords(String responseBody) {
-    final parsed = json.decode(responseBody).cast<Map<String, dynamic>>();
-    return parsed.map<Word>((json) => Word.fromJson(json)).toList();
+    setState(() async {
+      words = await helper.queryAllWords();
+    });
   }
 
   initState() {
     super.initState();
-    _getWords();
+//    _getWords();
+    _readFromDb();
   }
 
   dispose() {
@@ -41,16 +39,26 @@ class _WordListControllerState extends State<WordListController> {
     return Scaffold(
         body: Container(
             child:
-            words == null ? Center(child: CircularProgressIndicator(valueColor: AlwaysStoppedAnimation<Color>(Colors.blue))) :
-            ListView.builder(itemCount: words.length,
-                itemBuilder: (context, index) {
-                  return _buildItem(words[index]);
-                })
+            FutureBuilder<List<Word>>(
+                future: helper.queryAllWords(),
+                builder: (BuildContext context, AsyncSnapshot<List<Word>> snapshot) {
+                  if (snapshot.hasData) {
+                    return ListView.builder(
+                        itemCount: words.length,
+                        itemBuilder: (BuildContext context, int index) {
+                          Word item = snapshot.data[index];
+                          return ListTile(
+                            title: Text(item.word),
+
+                          );
+                        }
+                    );
+                  } else {
+                    return Center(child: CircularProgressIndicator(valueColor: AlwaysStoppedAnimation<Color>(Colors.blue)));
+                  }
+                }
+            )
         )
     );
   }
-}
-
-Widget _buildItem(Word word) {
-  return new Text("${word.word} - ${word.definition}");
 }
