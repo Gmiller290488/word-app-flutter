@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'package:flutter/material.dart';
 import 'WordListController.dart';
 import 'WordCardController.dart';
@@ -20,18 +18,31 @@ class MainApp extends StatefulWidget {
 
 class _MainAppState extends State<MainApp> {
 
+  final Key keyTwo = PageStorageKey('WordListController');
+
+  int currentTab = 0;
+
+  WordCardController one;
+  WordListController two;
+  List<Widget> pages;
+  final PageStorageBucket bucket = PageStorageBucket();
+  Widget currentPage;
+
   @override
   void initState() {
-    super.initState();
+    one = WordCardController();
+    two = WordListController(
+      key: keyTwo,
+    );
+    pages = [one, two];
+
+    currentPage = one;
+
     _getWords();
     SharedPrefsHelper.updateDateLastOpened();
-  }
 
-  int index = 0;
-  var pages = [
-    WordCardController(),
-    WordListController()
-  ];
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -42,9 +53,18 @@ class _MainAppState extends State<MainApp> {
         length: 2,
         child: Scaffold(
             backgroundColor: Colors.black,
-            body: SafeArea(
-                child: pages[index]),
+            body: PageStorage(
+              child: currentPage,
+              bucket: bucket,
+            ),
             bottomNavigationBar: BottomNavigationBar(
+              currentIndex: currentTab,
+                onTap: (int index) {
+                  setState(() {
+                    currentTab = index;
+                    currentPage = pages[index];
+                  });
+                },
               backgroundColor: Colors.black,
               items: [
                 BottomNavigationBarItem(
@@ -56,13 +76,8 @@ class _MainAppState extends State<MainApp> {
                   title: Text("Word List"),
                 ),
               ],
-              currentIndex: index,
+
               type: BottomNavigationBarType.fixed,
-              onTap: (newIndex) {
-                setState(() {
-                  index = newIndex;
-                });
-              },
             )
         ),
       ),

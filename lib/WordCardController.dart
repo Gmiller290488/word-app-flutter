@@ -5,6 +5,7 @@ import 'Utils/shared_prefs_helpers.dart';
 import 'Utils/WordJson.dart';
 
 class WordCardController extends StatefulWidget {
+  WordCardController({ Key key }) : super(key: key);
 
   @override
   _WordCardControllerState createState() => _WordCardControllerState();
@@ -20,74 +21,81 @@ class _WordCardControllerState extends State<WordCardController> {
   void initState() {
     super.initState();
     _isWordAdded = false;
+    wordOfTheDay = PageStorage.of(context).readState(
+        context,
+        identifier: ValueKey(
+            "wordOfTheDay"
+        )
+    );
     _fetchRandomWord();
   }
 
   @override
   Widget build(BuildContext context) {
     return Container(
-        child: Center(
-            child: Card(
-                shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10)
-                ),
-                child:
-                ClipRRect(
-                    borderRadius: BorderRadius.vertical(
-                        top: Radius.circular(10)),
-                    child: (wordOfTheDay != null) ? Column(
-                        mainAxisSize: MainAxisSize.max,
-                        children: <Widget>[
-                          Container(
-                            padding: EdgeInsets.all(12),
-                            color: Colors.blueAccent.withOpacity(0.6),
-                            child:
-                            Row(
-                                mainAxisSize: MainAxisSize.max,
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: <Widget>[
-                                  Text("WORD OF THE DAY",
-                                      style: TextStyle(
-                                          fontSize: 20.0,
-                                          fontWeight: FontWeight.bold
-                                      ))
-                                ]
-                            ),
-                          ),
-                          ListTile(
-//                            title: Text("Bulwark",
-                            title: Text(wordOfTheDay.word,
-                                textAlign: TextAlign.center,
-                                style: TextStyle(
-                                  fontSize: 40.0,
-                                )
-                            ),
-                          ),
-                          ListTile(
-                              title: RichText(
-                                text: TextSpan(
-                                  text: "Definition: ",
-                                  style: TextStyle(
-                                      color: Colors.white
-                                  ),
-                                  children: <TextSpan>[
-//                                    TextSpan(text: '\nA defensive wall',
-                                    TextSpan(text: '\n',
-                                        style: TextStyle(
-                                            fontSize: 20.0,
-                                            color: Colors.white70
-                                        )
-                                    ),
-                                    TextSpan(text: wordOfTheDay.definition,
-                                        style: TextStyle(
-                                            fontSize: 20.0,
-                                            color: Colors.white70
-                                        )
-                                    ),
-                                  ],
+        child: SafeArea(
+            child: Center(
+                child: Card(
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10)
+                    ),
+                    child:
+                    ClipRRect(
+                        borderRadius: BorderRadius.vertical(
+                            top: Radius.circular(10)),
+                        child: (wordOfTheDay != null) ? Column(
+                            mainAxisSize: MainAxisSize.max,
+                            children: <Widget>[
+                              Container(
+                                padding: EdgeInsets.all(12),
+                                color: Colors.blueAccent.withOpacity(0.6),
+                                child:
+                                Row(
+                                    mainAxisSize: MainAxisSize.max,
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: <Widget>[
+                                      Text("WORD OF THE DAY",
+                                          style: TextStyle(
+                                              fontSize: 20.0,
+                                              fontWeight: FontWeight.bold
+                                          ))
+                                    ]
                                 ),
-                              )
-                          ),
+                              ),
+                              ListTile(
+//                            title: Text("Bulwark",
+                                title: Text(wordOfTheDay.word,
+                                    textAlign: TextAlign.center,
+                                    style: TextStyle(
+                                      fontSize: 40.0,
+                                    )
+                                ),
+                              ),
+                              ListTile(
+                                  title: RichText(
+                                    text: TextSpan(
+                                      text: "Definition: ",
+                                      style: TextStyle(
+                                          color: Colors.white
+                                      ),
+                                      children: <TextSpan>[
+//                                    TextSpan(text: '\nA defensive wall',
+                                        TextSpan(text: '\n',
+                                            style: TextStyle(
+                                                fontSize: 20.0,
+                                                color: Colors.white70
+                                            )
+                                        ),
+                                        TextSpan(text: wordOfTheDay.definition,
+                                            style: TextStyle(
+                                                fontSize: 20.0,
+                                                color: Colors.white70
+                                            )
+                                        ),
+                                      ],
+                                    ),
+                                  )
+                              ),
 //                          Spacer(),
 //                          ListTile(
 //                              title: RichText(
@@ -128,40 +136,41 @@ class _WordCardControllerState extends State<WordCardController> {
 //                                ),
 //                              )
 //                          ),
-                          Spacer(),
-                          ClipRRect(
-                              borderRadius: BorderRadius.vertical(
-                                  bottom: Radius.circular(10)),
-                              child:
-                              Column(
-                                mainAxisSize: MainAxisSize.max,
-                                children: <Widget>[
-                                  Container(
-                                      padding: EdgeInsets.all(12),
-                                      color: Colors.grey.withOpacity(0.6),
-                                      child:
-                                      Row(
-                                          mainAxisSize: MainAxisSize.max,
-                                          mainAxisAlignment: MainAxisAlignment
-                                              .center,
-                                          children: <Widget>[
-                                            Text("ADD TO YOUR WORD LIST?"),
-                                            Switch(
-                                                value: _isWordAdded,
-                                                onChanged: (value) {
-                                                  setState(() {
-                                                    _isWordAdded = value;
-                                                  });
-                                                }
-                                            )
-                                          ]
-                                      )
-                                  ),
-                                ],
+                              Spacer(),
+                              ClipRRect(
+                                  borderRadius: BorderRadius.vertical(
+                                      bottom: Radius.circular(10)),
+                                  child:
+                                  Column(
+                                    mainAxisSize: MainAxisSize.max,
+                                    children: <Widget>[
+                                      Container(
+                                          padding: EdgeInsets.all(12),
+                                          color: Colors.grey.withOpacity(0.6),
+                                          child:
+                                          Row(
+                                              mainAxisSize: MainAxisSize.max,
+                                              mainAxisAlignment: MainAxisAlignment
+                                                  .center,
+                                              children: <Widget>[
+                                                Text("ADD TO YOUR WORD LIST?"),
+                                                Switch(
+                                                    value: _isWordAdded,
+                                                    onChanged: (value) {
+                                                      setState(() {
+                                                        _isWordAdded = value;
+                                                      });
+                                                    }
+                                                )
+                                              ]
+                                          )
+                                      ),
+                                    ],
+                                  )
                               )
-                          )
-                        ]
-                    ) : Center(child: CircularProgressIndicator(valueColor: AlwaysStoppedAnimation<Color>(Colors.blue)))
+                            ]
+                        ) : Center(child: CircularProgressIndicator(valueColor: AlwaysStoppedAnimation<Color>(Colors.blue)))
+                    )
                 )
             )
         )
@@ -179,22 +188,34 @@ class _WordCardControllerState extends State<WordCardController> {
     if (appOpenedToday) {
       wordId = await SharedPrefsHelper.getTodaysWord();
       word = await helper.queryWordById(wordId);
-      print("app was opened");
-
+      setState(() {
+        wordOfTheDay = word;
+        PageStorage.of(context).writeState(context, wordOfTheDay,
+          identifier: ValueKey("wordOfTheDay"),
+        );
+      });
     } else {
-      await Future.delayed(const Duration(milliseconds: 1), () {});
-      print("app wasn't opened");
-      List<WordJson> dbWords = await helper.queryAllWords();
+      if (wordOfTheDay == null) {
+
+        await Future.delayed(const Duration(milliseconds: 1), () {});
+        List<WordJson> dbWords = await helper.queryAllWords();
         final _random = new Random();
 
         int randomNum = 0 + _random.nextInt(dbWords.length - 1);
         word = dbWords[randomNum];
         SharedPrefsHelper.updateTodaysWord(word.id);
-      }
 
-    setState(() {
-      wordOfTheDay = word;
-    });
+        setState(() {
+          wordOfTheDay = word;
+          PageStorage.of(context).writeState(context, wordOfTheDay,
+            identifier: ValueKey("wordOfTheDay"),
+          );
+        });
+      }
+    }
+
+
+
   }
 }
 

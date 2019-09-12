@@ -4,6 +4,7 @@ import 'Utils/database_helpers.dart';
 
 class WordListController extends StatefulWidget {
   WordListController({ Key key }) : super(key: key);
+
   @override
   _WordListControllerState createState() => _WordListControllerState();
 }
@@ -14,15 +15,26 @@ class _WordListControllerState extends State<WordListController> {
   List<WordJson> words;
 
   _readFromDb() async {
-    List<WordJson> dbWords = await helper.queryAllWords();
-    setState(() {
-      words = dbWords;
-    });
+    if (words == null) {
+      List<WordJson> dbWords = await helper.queryAllWords();
+      setState(() {
+        words = dbWords;
+        PageStorage.of(context).writeState(context, words,
+          identifier: ValueKey("words"),
+        );
+      });
+    }
   }
 
   initState() {
-    super.initState();
+    words = PageStorage.of(context).readState(
+      context,
+      identifier: ValueKey(
+        "words"
+      ),
+    );
     _readFromDb();
+    super.initState();
   }
 
   dispose() {
@@ -35,25 +47,12 @@ class _WordListControllerState extends State<WordListController> {
     return Scaffold(
         body: Container(
             child:
-            FutureBuilder<List<WordJson>>(
-                future: helper.queryAllWords(),
-                builder: (BuildContext context, AsyncSnapshot<List<WordJson>> snapshot) {
-                  if (snapshot.hasData) {
-                    return ListView.builder(
-                        itemCount: words.length,
-                        itemBuilder: (BuildContext context, int index) {
-                          WordJson item = snapshot.data[index];
-                          return ListTile(
-                            title: Text(item.word),
-
-                          );
-                        }
-                    );
-                  } else {
-                    return Center(child: CircularProgressIndicator(valueColor: AlwaysStoppedAnimation<Color>(Colors.blue)));
-                  }
-                }
-            )
+            words == null ? Center(child: CircularProgressIndicator(valueColor: AlwaysStoppedAnimation<Color>(Colors.blue))) :
+            ListView.builder(itemCount: words.length,
+                itemBuilder: (context, index) {
+                  return ListTile(
+                      title: Text(words[index].word));
+                })
         )
     );
   }
