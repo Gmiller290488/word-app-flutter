@@ -15,8 +15,9 @@ class _WordListControllerState extends State<WordListController> {
   List<WordJson> words;
 
   _readFromDb() async {
-    if (words == null) {
-      List<WordJson> dbWords = await helper.queryAllWords();
+    List<WordJson> dbWords = await helper.queryAllSelectedWords();
+    print(dbWords);
+    if (words == null || (words.length != dbWords.length)) {
       setState(() {
         words = dbWords;
         PageStorage.of(context).writeState(context, words,

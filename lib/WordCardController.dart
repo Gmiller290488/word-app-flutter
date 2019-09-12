@@ -20,13 +20,18 @@ class _WordCardControllerState extends State<WordCardController> {
   @override
   void initState() {
     super.initState();
-    _isWordAdded = false;
     wordOfTheDay = PageStorage.of(context).readState(
         context,
         identifier: ValueKey(
             "wordOfTheDay"
         )
     );
+    _isWordAdded = PageStorage.of(context).readState(
+        context,
+        identifier: ValueKey(
+            "isWordAdded"
+        )
+    ) ?? false;
     _fetchRandomWord();
   }
 
@@ -155,10 +160,11 @@ class _WordCardControllerState extends State<WordCardController> {
                                               children: <Widget>[
                                                 Text("ADD TO YOUR WORD LIST?"),
                                                 Switch(
-                                                    value: _isWordAdded,
+                                                    value: (_isWordAdded),
                                                     onChanged: (value) {
                                                       setState(() {
                                                         _isWordAdded = value;
+                                                        modifyWordList(value);
                                                       });
                                                     }
                                                 )
@@ -213,9 +219,14 @@ class _WordCardControllerState extends State<WordCardController> {
         });
       }
     }
+  }
 
-
-
+  modifyWordList(bool value) {
+    value == true ? wordOfTheDay.selected = 1 : wordOfTheDay.selected = 0;
+    helper.updateWord(wordOfTheDay);
+    PageStorage.of(context).writeState(context, _isWordAdded,
+      identifier: ValueKey("isWordAdded"),
+    );
   }
 }
 

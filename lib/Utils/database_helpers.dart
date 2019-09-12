@@ -8,11 +8,12 @@ final String tableWords = 'words';
 final String columnId = '_id';
 final String columnWord = 'word';
 final String columnDef = 'definition';
+final String columnSelected = 'selected';
 
 class DatabaseHelper {
 
   static final _databaseName = 'Wordsdatabase.db';
-  static final _databaseVersion = 1;
+  static final _databaseVersion = 2;
 
   DatabaseHelper._privateConstructor();
   static final DatabaseHelper instance = DatabaseHelper._privateConstructor();
@@ -37,7 +38,8 @@ class DatabaseHelper {
         CREATE TABLE $tableWords (
           $columnId INTEGER PRIMARY KEY,
           $columnWord TEXT NOT NULL,
-          $columnDef TEXT NOT NULL
+          $columnDef TEXT NOT NULL,
+          $columnSelected INTEGER NOT NULL
           )
           ''');
   }
@@ -85,5 +87,23 @@ class DatabaseHelper {
       return list;
     }
     return null;
+  }
+
+  Future<List<WordJson>> queryAllSelectedWords() async {
+    final db = await database;
+    List<Map> maps = await db.query(tableWords,
+        columns: [columnId, columnWord, columnDef, columnSelected],
+        where: '$columnSelected=true',
+        whereArgs: ["true"]);
+    List<WordJson> list = maps.map((c) => WordJson.fromMap(c)).toList();
+    if (maps.length > 0) {
+      return list;
+    }
+    return null;
+  }
+
+  Future<int> updateWord(WordJson word) async {
+    final db = await database;
+    return await db.update("words", word.toMap(), where: "_id = ?", whereArgs: [word.id]);
   }
 }
