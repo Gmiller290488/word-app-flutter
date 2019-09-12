@@ -13,16 +13,23 @@ class _WordListControllerState extends State<WordListController> {
   DatabaseHelper helper = DatabaseHelper.instance;
   List<WordJson> wordsJson;
   List<WordJson> words;
+  bool isExpanded = false;
 
   _readFromDb() async {
     List<WordJson> dbWords = await helper.queryAllSelectedWords();
-    print(dbWords);
-    if (words == null || (words.length != dbWords.length)) {
+
+    if (dbWords != null) {
+      if (words == null || (words.length != dbWords.length)) {
+        setState(() {
+          words = dbWords;
+          PageStorage.of(context).writeState(context, words,
+            identifier: ValueKey("words"),
+          );
+        });
+      }
+    } else {
       setState(() {
-        words = dbWords;
-        PageStorage.of(context).writeState(context, words,
-          identifier: ValueKey("words"),
-        );
+        words = null;
       });
     }
   }
@@ -31,7 +38,7 @@ class _WordListControllerState extends State<WordListController> {
     words = PageStorage.of(context).readState(
       context,
       identifier: ValueKey(
-        "words"
+          "words"
       ),
     );
     _readFromDb();
@@ -44,16 +51,45 @@ class _WordListControllerState extends State<WordListController> {
 
   @override
   build(context) {
-
     return Scaffold(
         body: Container(
             child:
-            words == null ? Center(child: CircularProgressIndicator(valueColor: AlwaysStoppedAnimation<Color>(Colors.blue))) :
-            ListView.builder(itemCount: words.length,
-                itemBuilder: (context, index) {
-                  return ListTile(
-                      title: Text(words[index].word));
-                })
+            SafeArea(
+                child:
+                words == null ? Text("No words found!  You can start by adding Today's Word of the Day!") :
+                ListView.builder(itemCount: words.length,
+                    itemBuilder: (context, index) {
+                      return ExpansionTile(
+                          key: PageStorageKey('${words[index].id}'),
+                          title:
+                          Container(
+                            child:
+                            Align(
+                              alignment: Alignment.centerLeft,
+                              child: Text(
+                                words[index].word,
+                                style: TextStyle(
+                                  fontSize: 24.0,
+                                  fontWeight: isExpanded
+                                      ? FontWeight.bold
+                                      : FontWeight.normal,
+                                ),
+                              ),
+                            ),
+
+                            // Change header (which is a Container widget in this case) background colour here.
+                            color: Colors.transparent,
+                          ),
+                          trailing: isExpanded ? Icon(
+                              Icons.arrow_drop_up
+                          ) :
+                          Icon(
+                              Icons.arrow_drop_down
+                          )
+                      );
+                    }
+                )
+            )
         )
     );
   }

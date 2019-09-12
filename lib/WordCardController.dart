@@ -189,25 +189,24 @@ class _WordCardControllerState extends State<WordCardController> {
     WordJson word;
 
     bool appOpenedToday = await SharedPrefsHelper.appWasOpenedToday();
-    print(appOpenedToday);
 
-    if (appOpenedToday) {
-      wordId = await SharedPrefsHelper.getTodaysWord();
-      word = await helper.queryWordById(wordId);
-      setState(() {
-        wordOfTheDay = word;
-        PageStorage.of(context).writeState(context, wordOfTheDay,
-          identifier: ValueKey("wordOfTheDay"),
-        );
-      });
-    } else {
+//    if (appOpenedToday) {
+//      wordId = await SharedPrefsHelper.getTodaysWord();
+//      word = await helper.queryWordById(wordId);
+//      setState(() {
+//        wordOfTheDay = word;
+//        PageStorage.of(context).writeState(context, wordOfTheDay,
+//          identifier: ValueKey("wordOfTheDay"),
+//        );
+//      });
+//    } else {
       if (wordOfTheDay == null) {
 
         await Future.delayed(const Duration(milliseconds: 1), () {});
-        List<WordJson> dbWords = await helper.queryAllWords();
+        List<WordJson> dbWords = await helper.queryAllUnselectedWords();
         final _random = new Random();
 
-        int randomNum = 0 + _random.nextInt(dbWords.length - 1);
+        int randomNum = 0 + _random.nextInt(dbWords.length);
         word = dbWords[randomNum];
         SharedPrefsHelper.updateTodaysWord(word.id);
 
@@ -219,7 +218,7 @@ class _WordCardControllerState extends State<WordCardController> {
         });
       }
     }
-  }
+//  }
 
   modifyWordList(bool value) {
     value == true ? wordOfTheDay.selected = 1 : wordOfTheDay.selected = 0;

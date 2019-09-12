@@ -93,7 +93,22 @@ class DatabaseHelper {
     final db = await database;
     List<Map> maps = await db.query(tableWords,
         columns: [columnId, columnWord, columnDef, columnSelected],
+        orderBy: "word",
         where: '$columnSelected=true',
+        whereArgs: ["true"]);
+    List<WordJson> list = maps.map((c) => WordJson.fromMap(c)).toList();
+    if (maps.length > 0) {
+      return list;
+    }
+    return null;
+  }
+
+  Future<List<WordJson>> queryAllUnselectedWords() async {
+    final db = await database;
+    List<Map> maps = await db.query(tableWords,
+        columns: [columnId, columnWord, columnDef, columnSelected],
+        orderBy: "word",
+        where: '$columnSelected=false',
         whereArgs: ["true"]);
     List<WordJson> list = maps.map((c) => WordJson.fromMap(c)).toList();
     if (maps.length > 0) {

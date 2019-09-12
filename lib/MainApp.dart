@@ -19,6 +19,7 @@ class MainApp extends StatefulWidget {
 class _MainAppState extends State<MainApp> {
 
   final Key keyTwo = PageStorageKey('WordListController');
+  final Key keyOne = PageStorageKey('WordCardController');
 
   int currentTab = 0;
 
@@ -30,7 +31,9 @@ class _MainAppState extends State<MainApp> {
 
   @override
   void initState() {
-    one = WordCardController();
+    one = WordCardController(
+      key: keyOne,
+    );
     two = WordListController(
       key: keyTwo,
     );
@@ -101,6 +104,7 @@ class _MainAppState extends State<MainApp> {
     NetworkCalls.getWords().then((response) {
         List<WordJson> wordsJson = parseWords(response.body);
         for (WordJson word in wordsJson) {
+          print(word);
             _saveWordToDb(word);
           }
     });
