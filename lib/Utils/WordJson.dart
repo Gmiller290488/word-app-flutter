@@ -6,11 +6,13 @@ class WordJson {
   String word;
   String definition;
   int selected;
+  bool expanded;
 
   final String columnId = '_id';
   final String columnWord = 'word';
   final String columnDef = 'definition';
   final String columnSelected = 'selected';
+
 
   WordJson({ this.id, this.word, this.definition, this.selected});
 

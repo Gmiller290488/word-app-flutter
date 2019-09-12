@@ -35,7 +35,7 @@ class _MainAppState extends State<MainApp> {
       key: keyOne,
     );
     two = WordListController(
-      key: keyTwo,
+//      key: keyTwo,
     );
     pages = [one, two];
 
