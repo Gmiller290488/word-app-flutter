@@ -2,18 +2,20 @@ import 'dart:io';
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:path_provider/path_provider.dart';
-import 'WordJson.dart';
+import 'word.dart';
 
 final String tableWords = 'words';
 final String columnId = '_id';
 final String columnWord = 'word';
 final String columnDef = 'definition';
 final String columnSelected = 'selected';
+final String columnSynonyms = 'synonyms';
+final String columnUsage = 'usage';
 
 class DatabaseHelper {
 
-  static final _databaseName = 'Wordsdatabase.db';
-  static final _databaseVersion = 2;
+  static final _databaseName = 'Wordsdatabase1.db';
+  static final _databaseVersion = 1;
 
   DatabaseHelper._privateConstructor();
   static final DatabaseHelper instance = DatabaseHelper._privateConstructor();
@@ -39,12 +41,14 @@ class DatabaseHelper {
           $columnId INTEGER PRIMARY KEY,
           $columnWord TEXT NOT NULL,
           $columnDef TEXT NOT NULL,
-          $columnSelected INTEGER NOT NULL
+          $columnSelected INTEGER NOT NULL,
+          $columnUsage TEXT NOT NULL,
+          $columnSynonyms TEXT NOT NULL
           )
           ''');
   }
 
-  Future<int> insert(WordJson word) async {
+  Future<int> insert(Word word) async {
     Database db = await database;
     int id = await db.insert(tableWords, word.toMap());
     return id;
@@ -55,69 +59,69 @@ class DatabaseHelper {
     db.delete("words");
   }
 
-  Future<WordJson> queryWordById(int id) async {
+  Future<Word> queryWordById(int id) async {
     Database db = await database;
     List<Map> maps = await db.query(tableWords,
-        columns: [columnId, columnWord, columnDef],
+        columns: [columnId, columnWord, columnDef, columnSynonyms, columnUsage, columnSelected],
         where: '$columnId= ?',
         whereArgs: [id]);
     if (maps.length > 0) {
-      return WordJson.fromMap(maps.first);
+      return Word.fromMap(maps.first);
     }
     return null;
   }
 
-  Future<WordJson> queryWordByWord(String word) async {
+  Future<Word> queryWordByWord(String word) async {
     Database db = await database;
     List<Map> maps = await db.query(tableWords,
-        columns: [columnId, columnWord, columnDef],
+        columns: [columnId, columnWord, columnDef, columnSynonyms, columnUsage, columnSelected],
         where: '$columnWord= ?',
         whereArgs: [word]);
     if (maps.length > 0) {
-      return WordJson.fromMap(maps.first);
+      return Word.fromMap(maps.first);
     }
     return null;
   }
 
-  Future<List<WordJson>> queryAllWords() async {
+  Future<List<Word>> queryAllWords() async {
     final db = await database;
     var response = await db.query("words");
-    List<WordJson> list = response.map((c) => WordJson.fromMap(c)).toList();
+    List<Word> list = response.map((c) => Word.fromMap(c)).toList();
     if (list.length > 0) {
       return list;
     }
     return null;
   }
 
-  Future<List<WordJson>> queryAllSelectedWords() async {
+  Future<List<Word>> queryAllSelectedWords() async {
     final db = await database;
     List<Map> maps = await db.query(tableWords,
-        columns: [columnId, columnWord, columnDef, columnSelected],
+        columns: [columnId, columnWord, columnDef, columnSynonyms, columnUsage, columnSelected],
         orderBy: "word",
         where: '$columnSelected=true',
         whereArgs: ["true"]);
-    List<WordJson> list = maps.map((c) => WordJson.fromMap(c)).toList();
+    List<Word> list = maps.map((c) => Word.fromMap(c)).toList();
     if (maps.length > 0) {
       return list;
     }
     return null;
   }
 
-  Future<List<WordJson>> queryAllUnselectedWords() async {
+  Future<List<Word>> queryAllUnselectedWords() async {
     final db = await database;
     List<Map> maps = await db.query(tableWords,
-        columns: [columnId, columnWord, columnDef, columnSelected],
+        columns: [columnId, columnWord, columnDef, columnSynonyms, columnUsage, columnSelected],
         orderBy: "word",
         where: '$columnSelected=false',
         whereArgs: ["true"]);
-    List<WordJson> list = maps.map((c) => WordJson.fromMap(c)).toList();
+    List<Word> list = maps.map((c) => Word.fromMap(c)).toList();
     if (maps.length > 0) {
       return list;
     }
     return null;
   }
 
-  Future<int> updateWord(WordJson word) async {
+  Future<int> updateWord(Word word) async {
     final db = await database;
     return await db.update("words", word.toMap(), where: "_id = ?", whereArgs: [word.id]);
   }
