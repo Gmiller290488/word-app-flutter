@@ -23,6 +23,7 @@ class _UserLoginState extends State<UserLogin> {
   static List<Word> dbSelectedWords;
   static List<Word> dbUnselectedWords;
   static List<Word> dbAllWords;
+  static List<Word> wordsJson;
 
   @override
   void initState() {
@@ -128,7 +129,7 @@ class _UserLoginState extends State<UserLogin> {
                     minWidth: double.infinity,
                     child: MaterialButton(
                       onPressed: () {
-                        _pushToCardScreen();
+                        _pushToTabScreen();
                       },
                       textColor: Colors.black,
                       color: Colors.white,
@@ -167,17 +168,19 @@ class _UserLoginState extends State<UserLogin> {
     dbUnselectedWords = await helper.queryAllUnselectedWords();
     dbAllWords = await helper.queryAllWords();
 
-    await _getWordOfTheDay();
+//    await _getRegisteredWordOfTheDay();
+    await _getGuestWordOfTheDay();
   }
 
   _getWords() async {
     NetworkCalls.getWords().then((response) {
-      List<Word> wordsJson = parseWords(response.body);
+      wordsJson = parseWords(response.body);
       for (Word word in wordsJson) {
         _saveWordToDb(word);
       }
       _queryDb();
     });
+
   }
 
   static List<Word> parseWords(String responseBody) {
@@ -192,14 +195,39 @@ class _UserLoginState extends State<UserLogin> {
     await helper.insert(wordJson);
   }
 
-  _pushToCardScreen() {
+  _pushToTabScreen() async {
 
-    WordTabController nextScreen = WordTabController(dbSelectedWords: dbSelectedWords, dbUnselectedWords: dbUnselectedWords, wordOfTheDay: registeredWordOfTheDay);
-    Navigator.push(
-        context,
-        MaterialPageRoute(builder: (context) => nextScreen)
-    );
-  }
+    if (passwordEditingController.text == "password" && emailEditingController.text == "email") {
+      await _getRegisteredWordOfTheDay();
+      WordTabController nextScreen = WordTabController(dbSelectedWords: dbSelectedWords, dbUnselectedWords: dbUnselectedWords, wordOfTheDay: registeredWordOfTheDay);
+      await Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => nextScreen)
+      );
+    } else {
+      showIncorrectCredentialsError();
+      }
+    }
+
+    showIncorrectCredentialsError() {
+      return showDialog<void>(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text("Error"),
+            content: const Text("There was a problem with your email or password"),
+            actions: <Widget>[
+              FlatButton(
+                child: Text("Ok"),
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+              )
+            ]
+          );
+        }
+      );
+    }
 
   _pushToWordOfTheDayScreen() {
 
@@ -210,13 +238,10 @@ class _UserLoginState extends State<UserLogin> {
     );
   }
 
-  _getWordOfTheDay() async {
+  _getRegisteredWordOfTheDay() async {
     DatabaseHelper helper = DatabaseHelper.instance;
-    int guestWordId;
     int registeredWordId;
-    Word guestWord;
     Word registeredWord;
-
     bool appOpenedToday = await SharedPrefsHelper.appWasOpenedToday();
 
     if (appOpenedToday) {
@@ -224,15 +249,8 @@ class _UserLoginState extends State<UserLogin> {
       registeredWord = await helper.queryWordById(registeredWordId);
       registeredWordOfTheDay = registeredWord;
 
-      guestWordId = await SharedPrefsHelper.getTodaysGuestWord();
-      guestWord = await helper.queryWordById(guestWordId);
-      guestWordOfTheDay = guestWord;
-
       PageStorage.of(context).writeState(context, registeredWordOfTheDay,
         identifier: ValueKey("registeredWordOfTheDay"),
-      );
-      PageStorage.of(context).writeState(context, guestWordOfTheDay,
-        identifier: ValueKey("guestWordOfTheDay"),
       );
 
     } else {
@@ -242,22 +260,41 @@ class _UserLoginState extends State<UserLogin> {
       SharedPrefsHelper.updateTodaysRegisteredWord(registeredWord.id);
       registeredWordOfTheDay = registeredWord;
 
-      final _guestRandom = new Random();
-      int guestRandomNum = 0 + _guestRandom.nextInt(dbAllWords.length);
-      guestWord = dbAllWords[guestRandomNum];
-      SharedPrefsHelper.updateTodaysGuestWord(guestWord.id);
-
-
       PageStorage.of(context).writeState(context, registeredWordOfTheDay,
         identifier: ValueKey("registeredWordOfTheDay"),
-      );
-      guestWordOfTheDay = guestWord;
-      PageStorage.of(context).writeState(context, registeredWordOfTheDay,
-        identifier: ValueKey("guestWordOfTheDay"),
       );
       setState(() {
         wordTabController = WordTabController(dbSelectedWords: dbSelectedWords, dbUnselectedWords: dbUnselectedWords);
       });
+    }
+  }
+
+  _getGuestWordOfTheDay() async {
+    DatabaseHelper helper = DatabaseHelper.instance;
+    int guestWordId;
+    Word guestWord;
+
+    bool appOpenedToday = await SharedPrefsHelper.appWasOpenedToday();
+
+    if (appOpenedToday) {
+      guestWordId = await SharedPrefsHelper.getTodaysGuestWord();
+      guestWord = await helper.queryWordById(guestWordId);
+      guestWordOfTheDay = guestWord;
+
+      PageStorage.of(context).writeState(context, guestWordOfTheDay,
+        identifier: ValueKey("guestWordOfTheDay"),
+      );
+
+    } else {
+      final _random = new Random();
+      int randomNum = 0 + _random.nextInt(dbAllWords.length);
+      guestWord = dbAllWords[randomNum];
+      SharedPrefsHelper.updateTodaysGuestWord(guestWord.id);
+
+      guestWordOfTheDay = guestWord;
+      PageStorage.of(context).writeState(context, registeredWordOfTheDay,
+        identifier: ValueKey("guestWordOfTheDay"),
+      );
     }
   }
 }
