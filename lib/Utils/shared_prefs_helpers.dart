@@ -23,14 +23,27 @@ class SharedPrefsHelper {
      return dateNow == dateLastOpened;
   }
 
-  static updateTodaysWord(int id) async {
+  static updateTodaysRegisteredWord(int id) async {
     final prefs = await SharedPreferences.getInstance();
     final key = 'todaysWord';
     final value = id;
     prefs.setInt(key, value);
   }
 
-  static Future<int> getTodaysWord() async {
+  static Future<int> getTodaysRegisteredWord() async {
+    final prefs = await SharedPreferences.getInstance();
+    final key = 'todaysWord';
+    return prefs.getInt(key) ?? 1;
+  }
+
+  static updateTodaysGuestWord(int id) async {
+    final prefs = await SharedPreferences.getInstance();
+    final key = 'todaysWord';
+    final value = id;
+    prefs.setInt(key, value);
+  }
+
+  static Future<int> getTodaysGuestWord() async {
     final prefs = await SharedPreferences.getInstance();
     final key = 'todaysWord';
     return prefs.getInt(key) ?? 1;

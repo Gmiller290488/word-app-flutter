@@ -17,22 +17,24 @@ class UserLogin extends StatefulWidget {
 class _UserLoginState extends State<UserLogin> {
   WordTabController wordTabController;
   TextEditingController emailEditingController = TextEditingController();
-  Word wordOfTheDay;
+  TextEditingController passwordEditingController = TextEditingController();
+  Word registeredWordOfTheDay;
+  Word guestWordOfTheDay;
   static List<Word> dbSelectedWords;
   static List<Word> dbUnselectedWords;
+  static List<Word> dbAllWords;
 
   @override
   void initState() {
 
     _getWords();
-    wordTabController = WordTabController(dbSelectedWords: dbSelectedWords, dbUnselectedWords: dbUnselectedWords, wordOfTheDay: wordOfTheDay);
+    wordTabController = WordTabController(dbSelectedWords: dbSelectedWords, dbUnselectedWords: dbUnselectedWords, wordOfTheDay: registeredWordOfTheDay);
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      //resizeToAvoidBottomInset: false,
       body: Center(
         child: SingleChildScrollView(
           child: Container(
@@ -104,7 +106,7 @@ class _UserLoginState extends State<UserLogin> {
                     autofocus: false,
                     obscureText: true,
                     keyboardType: TextInputType.text,
-                    controller: emailEditingController,
+                    controller: passwordEditingController,
                     decoration: InputDecoration(
                         labelText: "Password",
                         hintText: "Password",
@@ -163,6 +165,7 @@ class _UserLoginState extends State<UserLogin> {
     DatabaseHelper helper = DatabaseHelper.instance;
     dbSelectedWords = await helper.queryAllSelectedWords();
     dbUnselectedWords = await helper.queryAllUnselectedWords();
+    dbAllWords = await helper.queryAllWords();
 
     await _getWordOfTheDay();
   }
@@ -191,7 +194,7 @@ class _UserLoginState extends State<UserLogin> {
 
   _pushToCardScreen() {
 
-    WordTabController nextScreen = WordTabController(dbSelectedWords: dbSelectedWords, dbUnselectedWords: dbUnselectedWords, wordOfTheDay: wordOfTheDay);
+    WordTabController nextScreen = WordTabController(dbSelectedWords: dbSelectedWords, dbUnselectedWords: dbUnselectedWords, wordOfTheDay: registeredWordOfTheDay);
     Navigator.push(
         context,
         MaterialPageRoute(builder: (context) => nextScreen)
@@ -200,7 +203,7 @@ class _UserLoginState extends State<UserLogin> {
 
   _pushToWordOfTheDayScreen() {
 
-    WordOfTheDayScreen nextScreen = WordOfTheDayScreen(wordOfTheDay: wordOfTheDay);
+    WordOfTheDayScreen nextScreen = WordOfTheDayScreen(wordOfTheDay: guestWordOfTheDay);
     Navigator.push(
         context,
         MaterialPageRoute(builder: (context) => nextScreen)
@@ -209,31 +212,52 @@ class _UserLoginState extends State<UserLogin> {
 
   _getWordOfTheDay() async {
     DatabaseHelper helper = DatabaseHelper.instance;
-    int wordId;
-    Word word;
+    int guestWordId;
+    int registeredWordId;
+    Word guestWord;
+    Word registeredWord;
 
     bool appOpenedToday = await SharedPrefsHelper.appWasOpenedToday();
 
     if (appOpenedToday) {
-      wordId = await SharedPrefsHelper.getTodaysWord();
-      word = await helper.queryWordById(wordId);
-      wordOfTheDay = word;
-      PageStorage.of(context).writeState(context, wordOfTheDay,
-        identifier: ValueKey("wordOfTheDay"),
+      registeredWordId = await SharedPrefsHelper.getTodaysRegisteredWord();
+      registeredWord = await helper.queryWordById(registeredWordId);
+      registeredWordOfTheDay = registeredWord;
+
+      guestWordId = await SharedPrefsHelper.getTodaysGuestWord();
+      guestWord = await helper.queryWordById(guestWordId);
+      guestWordOfTheDay = guestWord;
+
+      PageStorage.of(context).writeState(context, registeredWordOfTheDay,
+        identifier: ValueKey("registeredWordOfTheDay"),
       );
+      PageStorage.of(context).writeState(context, guestWordOfTheDay,
+        identifier: ValueKey("guestWordOfTheDay"),
+      );
+
     } else {
       final _random = new Random();
       int randomNum = 0 + _random.nextInt(dbUnselectedWords.length);
-      word = dbUnselectedWords[randomNum];
-      SharedPrefsHelper.updateTodaysWord(word.id);
-      wordOfTheDay = word;
-      PageStorage.of(context).writeState(context, wordOfTheDay,
-        identifier: ValueKey("wordOfTheDay"),
+      registeredWord = dbUnselectedWords[randomNum];
+      SharedPrefsHelper.updateTodaysRegisteredWord(registeredWord.id);
+      registeredWordOfTheDay = registeredWord;
+
+      final _guestRandom = new Random();
+      int guestRandomNum = 0 + _guestRandom.nextInt(dbAllWords.length);
+      guestWord = dbAllWords[guestRandomNum];
+      SharedPrefsHelper.updateTodaysGuestWord(guestWord.id);
+
+
+      PageStorage.of(context).writeState(context, registeredWordOfTheDay,
+        identifier: ValueKey("registeredWordOfTheDay"),
+      );
+      guestWordOfTheDay = guestWord;
+      PageStorage.of(context).writeState(context, registeredWordOfTheDay,
+        identifier: ValueKey("guestWordOfTheDay"),
       );
       setState(() {
         wordTabController = WordTabController(dbSelectedWords: dbSelectedWords, dbUnselectedWords: dbUnselectedWords);
       });
-
     }
   }
 }
