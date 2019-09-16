@@ -135,22 +135,21 @@ class _UserLoginState extends State<UserLogin> {
                     ),
 
                   ),
-              SizedBox(
-                height: 50,
-              ),
-              ButtonTheme(
-                minWidth: double.infinity,
-                child: MaterialButton(
-                  onPressed: () {
-                    _pushToWordOfTheDayScreen();
-                  },
-                  textColor: Colors.black,
-                  color: Colors.white,
-                  height: 50,
-                  child: Text("Continue as Guest"),
-                ),
-              )
+                  Padding(
+                      padding: EdgeInsets.all(8),
+                      child:
+                      InkWell(
+                        child:
+                        Text("Just show me the Word of the Day!",
+                            style: TextStyle(
+                              decoration: TextDecoration.underline,
+                            )),
+                        onTap: () {
+                          _pushToWordOfTheDayScreen();
+                        },
 
+                      )
+                  )
                 ],
               ),
             ),
