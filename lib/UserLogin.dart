@@ -8,6 +8,7 @@ import 'dart:convert';
 import 'Utils/shared_prefs_helpers.dart';
 import 'dart:math';
 import 'WordOfTheDayScreen.dart';
+import 'Utils/user.dart';
 
 class UserLogin extends StatefulWidget {
   @override
@@ -20,6 +21,7 @@ class _UserLoginState extends State<UserLogin> {
   TextEditingController passwordEditingController = TextEditingController();
   Word registeredWordOfTheDay;
   Word guestWordOfTheDay;
+  int id;
   static List<Word> dbSelectedWords;
   static List<Word> dbUnselectedWords;
   static List<Word> dbAllWords;
@@ -29,7 +31,7 @@ class _UserLoginState extends State<UserLogin> {
   void initState() {
 
     _getWords();
-    wordTabController = WordTabController(dbSelectedWords: dbSelectedWords, dbUnselectedWords: dbUnselectedWords, wordOfTheDay: registeredWordOfTheDay);
+    wordTabController = WordTabController(dbSelectedWords: dbSelectedWords, dbUnselectedWords: dbUnselectedWords, wordOfTheDay: registeredWordOfTheDay, id: id);
     super.initState();
   }
 
@@ -180,7 +182,7 @@ class _UserLoginState extends State<UserLogin> {
 
   static List<Word> parseWords(String responseBody) {
     print(responseBody);
-    final parsed = json.decode(responseBody).cast<Map<String, dynamic>>();
+    final parsed = json.decode(responseBody);
     var list = parsed.map<Word>((json) => Word.fromJson(json)).toList();
     return list;
   }
@@ -192,10 +194,16 @@ class _UserLoginState extends State<UserLogin> {
 
   _pushToTabScreen() async {
 
-    if (passwordEditingController.text == "password" && emailEditingController.text == "email") {
+    var response = await NetworkCalls.logIn(email: emailEditingController.text, password: passwordEditingController.text);
+    final parsed = json.decode(response.body);
+    User user = User.fromJson(parsed);
+    print(response.body);
+    if (response.statusCode == 200) {
       dbSelectedWords = [];
       dbUnselectedWords = [];
-      int id = 1;
+      id = user.userID;
+      SharedPrefsHelper.updateToken(user.token);
+      print("id is ${user.userID}");
       for (Word word in dbAllWords) {
         print(word.word);
         if (word.selected == null) {
@@ -240,7 +248,6 @@ class _UserLoginState extends State<UserLogin> {
     }
 
   _pushToWordOfTheDayScreen() {
-
     WordOfTheDayScreen nextScreen = WordOfTheDayScreen(wordOfTheDay: guestWordOfTheDay);
     Navigator.push(
         context,
@@ -249,7 +256,6 @@ class _UserLoginState extends State<UserLogin> {
   }
 
   _getRegisteredWordOfTheDay() async {
-    print(dbUnselectedWords.length);
     DatabaseHelper helper = DatabaseHelper.instance;
     int registeredWordId;
     Word registeredWord;
@@ -279,7 +285,7 @@ class _UserLoginState extends State<UserLogin> {
         identifier: ValueKey("registeredWordOfTheDay"),
       );
       setState(() {
-        wordTabController = WordTabController(dbSelectedWords: dbSelectedWords, dbUnselectedWords: dbUnselectedWords);
+        wordTabController = WordTabController(dbSelectedWords: dbSelectedWords, dbUnselectedWords: dbUnselectedWords, wordOfTheDay: registeredWordOfTheDay, id: id);
       });
     }
   }

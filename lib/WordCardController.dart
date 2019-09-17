@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'Utils/database_helpers.dart';
 import 'Utils/word.dart';
+import 'Networking/NetworkCalls.dart';
 
 class WordCardController extends StatefulWidget {
 
@@ -212,11 +213,12 @@ class _WordCardControllerState extends State<WordCardController> {
       copy.add(widget.id);
     }
     widget.wordOfTheDay.selected = copy;
-      helper.updateWord(widget.wordOfTheDay);
-      PageStorage.of(context).writeState(context, _isWordAdded,
-        identifier: ValueKey("isWordAdded"),
-      );
-    }
+    helper.updateWord(widget.wordOfTheDay);
+    PageStorage.of(context).writeState(context, _isWordAdded,
+      identifier: ValueKey("isWordAdded"),
+    );
+    NetworkCalls.update(word: widget.wordOfTheDay);
+  }
 }
 
 

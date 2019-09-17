@@ -1,6 +1,3 @@
-import 'package:flutter/gestures.dart';
-import 'dart:convert';
-
 class Word {
   int id;
   String word;
@@ -17,7 +14,6 @@ class Word {
   final String columnSynonyms = 'synonyms';
   final String columnUsage = 'usage';
 
-
   Word({ this.id, this.word, this.definition, this.selected, this.synonyms, this.usage });
 
   factory Word.fromJson(Map<String, dynamic> parsedJson) {
@@ -30,6 +26,15 @@ class Word {
         usage: parsedJson["usage"]
     );
   }
+
+  Map<String, dynamic> toJson() => {
+        "id": id,
+        "word": word,
+        "definition": definition,
+        "selected": selected,
+        "synonyms": synonyms,
+        "usage": usage
+  };
 
   Word.fromMap(Map<String, dynamic> map) {
     id = map[columnId];

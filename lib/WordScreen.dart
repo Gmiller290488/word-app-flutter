@@ -31,6 +31,7 @@ class WordScreen extends StatelessWidget {
                 child: Column(
                     mainAxisSize: MainAxisSize.max,
                     children: <Widget>[
+                      Spacer(),
                       ListTile(
                           title: RichText(
                             text: TextSpan(

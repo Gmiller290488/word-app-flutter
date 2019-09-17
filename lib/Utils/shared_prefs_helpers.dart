@@ -48,4 +48,18 @@ class SharedPrefsHelper {
     final key = 'todaysWord';
     return prefs.getInt(key) ?? 1;
   }
+
+  static updateToken(String token) async {
+    final prefs = await SharedPreferences.getInstance();
+    final key = 'token';
+    final value = token;
+    print(value);
+    prefs.setString(key, value);
+  }
+
+  static Future<String> getToken() async {
+    final prefs = await SharedPreferences.getInstance();
+    final key = 'token';
+    return prefs.getString(key);
+  }
 }
