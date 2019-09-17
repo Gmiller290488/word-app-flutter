@@ -5,4 +5,9 @@ class NetworkCalls {
     var url = "http://localhost:8080/api/word";
     return http.get(url);
   }
+
+//  static Future logIn({email: String}, {password: String}) {
+//    var url = "http://localhost:8080/api/word;"
+//  return http.
+//  }
 }

@@ -7,7 +7,8 @@ import 'WordScreen.dart';
 class WordListController extends StatefulWidget {
 
   final List<Word> words;
-  WordListController({ Key key, @required this.words }) : super(key: key);
+  final int id;
+  WordListController({ Key key, @required this.words, @required this.id }) : super(key: key);
 
   @override
   _WordListControllerState createState() => _WordListControllerState();
@@ -23,7 +24,15 @@ class _WordListControllerState extends State<WordListController> {
 
 
   _readFromDb() async {
-        List<Word> dbWords = await helper.queryAllSelectedWords();
+        List<Word> dbAllWords = await helper.queryAllWords();
+        List<Word> dbWords = [];
+        for (Word word in dbAllWords) {
+          if (word.selected != null) {
+            if (word.selected.contains(widget.id)) {
+              dbWords.add(word);
+            }
+          }
+        }
 
         if (dbWords != null) {
           if (words == null || (words.length != dbWords.length)) {

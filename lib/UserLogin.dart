@@ -150,7 +150,6 @@ class _UserLoginState extends State<UserLogin> {
                         onTap: () {
                           _pushToWordOfTheDayScreen();
                         },
-
                       )
                   )
                 ],
@@ -164,11 +163,7 @@ class _UserLoginState extends State<UserLogin> {
 
   _queryDb() async {
     DatabaseHelper helper = DatabaseHelper.instance;
-    dbSelectedWords = await helper.queryAllSelectedWords();
-    dbUnselectedWords = await helper.queryAllUnselectedWords();
     dbAllWords = await helper.queryAllWords();
-
-//    await _getRegisteredWordOfTheDay();
     await _getGuestWordOfTheDay();
   }
 
@@ -198,11 +193,26 @@ class _UserLoginState extends State<UserLogin> {
   _pushToTabScreen() async {
 
     if (passwordEditingController.text == "password" && emailEditingController.text == "email") {
+      dbSelectedWords = [];
+      dbUnselectedWords = [];
+      int id = 1;
+      for (Word word in dbAllWords) {
+        print(word.word);
+        if (word.selected == null) {
+          dbUnselectedWords.add(word);
+        } else {
+          if (word.selected.contains(id)) {
+            dbSelectedWords.add(word);
+          } else {
+            dbUnselectedWords.add(word);
+          }
+        }
+      }
+
       await _getRegisteredWordOfTheDay();
-      WordTabController nextScreen = WordTabController(dbSelectedWords: dbSelectedWords, dbUnselectedWords: dbUnselectedWords, wordOfTheDay: registeredWordOfTheDay);
       await Navigator.push(
           context,
-          MaterialPageRoute(builder: (context) => nextScreen)
+          MaterialPageRoute(builder: (context) => WordTabController(dbSelectedWords: dbSelectedWords, dbUnselectedWords: dbUnselectedWords, wordOfTheDay: registeredWordOfTheDay, id: id))
       );
     } else {
       showIncorrectCredentialsError();
@@ -239,6 +249,7 @@ class _UserLoginState extends State<UserLogin> {
   }
 
   _getRegisteredWordOfTheDay() async {
+    print(dbUnselectedWords.length);
     DatabaseHelper helper = DatabaseHelper.instance;
     int registeredWordId;
     Word registeredWord;
@@ -255,12 +266,16 @@ class _UserLoginState extends State<UserLogin> {
 
     } else {
       final _random = new Random();
-      int randomNum = 0 + _random.nextInt(dbUnselectedWords.length);
-      registeredWord = dbUnselectedWords[randomNum];
-      SharedPrefsHelper.updateTodaysRegisteredWord(registeredWord.id);
-      registeredWordOfTheDay = registeredWord;
+      if (dbUnselectedWords.length != 0) {
 
-      PageStorage.of(context).writeState(context, registeredWordOfTheDay,
+        int randomNum = 0 + _random.nextInt(dbUnselectedWords.length);
+        registeredWord = dbUnselectedWords[randomNum];
+        SharedPrefsHelper.updateTodaysRegisteredWord(registeredWord.id);
+        registeredWordOfTheDay = registeredWord;
+      } else {
+        registeredWordOfTheDay = guestWordOfTheDay;
+      }
+        PageStorage.of(context).writeState(context, registeredWordOfTheDay,
         identifier: ValueKey("registeredWordOfTheDay"),
       );
       setState(() {

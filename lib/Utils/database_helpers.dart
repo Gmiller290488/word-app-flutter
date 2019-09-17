@@ -51,6 +51,7 @@ class DatabaseHelper {
   Future<int> insert(Word word) async {
     Database db = await database;
     int id = await db.insert(tableWords, word.toMap());
+    print(word.toMap());
     return id;
   }
 
@@ -93,15 +94,16 @@ class DatabaseHelper {
     return null;
   }
 
-  Future<List<Word>> queryAllSelectedWords() async {
+  Future<List<Word>> queryAllSelectedWords(int id) async {
     final db = await database;
-    List<Map> maps = await db.query(tableWords,
-        columns: [columnId, columnWord, columnDef, columnSynonyms, columnUsage, columnSelected],
-        orderBy: "word",
-        where: '$columnSelected=true',
-        whereArgs: ["true"]);
-    List<Word> list = maps.map((c) => Word.fromMap(c)).toList();
-    if (maps.length > 0) {
+//    List<Map> maps = await db.query(tableWords,
+//        columns: [columnId, columnWord, columnDef, columnSynonyms, columnUsage, columnSelected],
+//        orderBy: "word",
+//        where: '$columnSelected = ?',
+//        whereArgs: [id]);
+    var res = await db.rawQuery("SELECT * FROM words WHERE selected = ?", [2]);
+    List<Word> list = res.map((c) => Word.fromMap(c)).toList();
+    if (res.length > 0) {
       return list;
     }
     return null;

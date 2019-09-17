@@ -5,7 +5,7 @@ class Word {
   int id;
   String word;
   String definition;
-  int selected;
+  List selected;
   String synonyms;
   String usage;
   bool expanded;

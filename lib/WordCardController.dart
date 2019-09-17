@@ -1,14 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:word_app_fl/WordListController.dart';
 import 'Utils/database_helpers.dart';
-import 'dart:math';
-import 'Utils/shared_prefs_helpers.dart';
 import 'Utils/word.dart';
 
 class WordCardController extends StatefulWidget {
 
   final Word wordOfTheDay;
-  WordCardController({ Key key, @required this.wordOfTheDay }) : super(key: key);
+  final int id;
+  WordCardController({ Key key, @required this.wordOfTheDay, @required this.id }) : super(key: key);
 
   @override
   _WordCardControllerState createState() => _WordCardControllerState();
@@ -19,14 +17,17 @@ class _WordCardControllerState extends State<WordCardController> {
   DatabaseHelper helper = DatabaseHelper.instance;
   bool _isWordAdded;
 
-
   @override
   void initState() {
-  if (widget.wordOfTheDay.selected == 1) {
-    _isWordAdded = true;
-  } else {
-    _isWordAdded = false;
-  }
+    if (widget.wordOfTheDay.selected == null) {
+      _isWordAdded = false;
+    } else {
+      if (widget.wordOfTheDay.selected.contains(widget.id)) {
+        _isWordAdded = true;
+      } else {
+        _isWordAdded = false;
+      }
+    }
     super.initState();
   }
 
@@ -198,12 +199,24 @@ class _WordCardControllerState extends State<WordCardController> {
   }
 
   modifyWordList(bool value) {
-    value == true ? widget.wordOfTheDay.selected = 1 : widget.wordOfTheDay.selected = 0;
-    helper.updateWord(widget.wordOfTheDay);
-    PageStorage.of(context).writeState(context, _isWordAdded,
-      identifier: ValueKey("isWordAdded"),
-    );
-  }
+    var copy;
+    if (widget.wordOfTheDay.selected != null) {
+      copy = List<int>.from(widget.wordOfTheDay.selected);
+      if (value == true) {
+        copy.add(widget.id);
+      } else {
+        copy.remove(widget.id);
+      }
+    } else {
+      copy = [];
+      copy.add(widget.id);
+    }
+    widget.wordOfTheDay.selected = copy;
+      helper.updateWord(widget.wordOfTheDay);
+      PageStorage.of(context).writeState(context, _isWordAdded,
+        identifier: ValueKey("isWordAdded"),
+      );
+    }
 }
 
 

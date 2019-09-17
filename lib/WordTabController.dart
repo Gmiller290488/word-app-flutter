@@ -8,17 +8,14 @@ class WordTabController extends StatefulWidget {
   final List<Word> dbUnselectedWords;
   final List<Word> dbSelectedWords;
   final Word wordOfTheDay;
-  WordTabController({ Key key, @required this.dbUnselectedWords, @required this.dbSelectedWords, @required this.wordOfTheDay }) : super(key: key);
+  final int id;
+  WordTabController({ Key key, @required this.dbUnselectedWords, @required this.dbSelectedWords, @required this.wordOfTheDay, @required this.id }) : super(key: key);
 
   @override
   _WordTabControllerState createState() => _WordTabControllerState();
 }
 
 class _WordTabControllerState extends State<WordTabController> {
-//  List<Word> dbUnselectedWords;
-//  List<Word> dbSelectedWords;
-//  Word wordOfTheDay;
-//  _WordTabControllerState({ this.dbUnselectedWords, this.dbSelectedWords, this.wordOfTheDay });
 
   final Key keyTwo = PageStorageKey('WordListController');
   final Key keyOne = PageStorageKey('WordCardController');
@@ -33,8 +30,8 @@ class _WordTabControllerState extends State<WordTabController> {
 
   @override
   void initState() {
-    one = WordCardController(wordOfTheDay: widget.wordOfTheDay, key: keyOne);
-    two = WordListController(words: widget.dbSelectedWords);
+    one = WordCardController(wordOfTheDay: widget.wordOfTheDay, id: widget.id, key: keyOne);
+    two = WordListController(words: widget.dbSelectedWords, id: widget.id);
     pages = [one, two];
     currentPage = one;
 
