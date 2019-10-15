@@ -1,5 +1,5 @@
 import 'dart:convert';
-import 'package:word_app_fl/Utils/word.dart';
+import 'package:word_app_fl/Models/word.dart';
 import 'package:http/http.dart' as http;
 import 'package:word_app_fl/Utils/shared_prefs_helpers.dart';
 

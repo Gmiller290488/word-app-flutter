@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'WordListController.dart';
 import 'WordCardController.dart';
-import 'Utils/word.dart';
 import 'Utils/shared_prefs_helpers.dart';
+import 'package:word_app_fl/Utils/database.dart';
 
 class WordTabController extends StatefulWidget {
   final List<Word> dbUnselectedWords;
@@ -31,7 +31,7 @@ class _WordTabControllerState extends State<WordTabController> {
   @override
   void initState() {
     one = WordCardController(wordOfTheDay: widget.wordOfTheDay, id: widget.id, key: keyOne);
-    two = WordListController(words: widget.dbSelectedWords, id: widget.id);
+    two = WordListController();
     pages = [one, two];
     currentPage = one;
 

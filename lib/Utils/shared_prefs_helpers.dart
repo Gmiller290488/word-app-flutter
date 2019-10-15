@@ -62,4 +62,18 @@ class SharedPrefsHelper {
     final key = 'token';
     return prefs.getString(key);
   }
+
+  static updateId(int id) async {
+    final prefs = await SharedPreferences.getInstance();
+    final key = 'id';
+    final value = id;
+    print(value);
+    prefs.setInt(key, value);
+  }
+
+  static Future<int> getId() async {
+    final prefs = await SharedPreferences.getInstance();
+    final key = 'id';
+    return prefs.getInt(key);
+  }
 }

@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:word_app_fl/Blocs/bloc_provider.dart';
 import 'package:word_app_fl/Utils/database_helpers.dart';
-import 'package:word_app_fl/Models/word.dart';
+import 'package:word_app_fl/Utils/database.dart';
 import 'package:rxdart/rxdart.dart';
 
 class WordListBloc {
@@ -20,7 +20,7 @@ class WordListBloc {
   WordListBloc() {
     getWords();
 
-    _addWordController.stream.listen(_handleUpdateWord);
+//    _addWordController.stream.listen(_handleUpdateWord);
   }
 
 
@@ -30,16 +30,16 @@ class WordListBloc {
   }
 
   getWords( {int id} ) async {
-    List<Word> words = await helper.queryAllWords();
-    print(words);
-    words.removeWhere((Word word) => !word.selected.contains(1));
-    print(words);
-    _inWords.add(words);
+//    List<Word> words = await helper.queryAllWords();
+//    print(words);
+//    words.removeWhere((Word word) => !word.selected.contains(1));
+//    print(words);
+//    _inWords.add(words);
   }
 
-  _handleUpdateWord(Word word) async {
-    await helper.updateWord(word);
-
-    getWords();
-  }
+//  _handleUpdateWord(Word word) async {
+//    await helper.updateWord(word);
+//
+//    getWords();
+//  }
 }

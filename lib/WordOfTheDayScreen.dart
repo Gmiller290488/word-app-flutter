@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'Utils/word.dart';
+import 'package:word_app_fl/Utils/database.dart';
 
 class WordOfTheDayScreen extends StatelessWidget {
 

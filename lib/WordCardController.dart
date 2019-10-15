@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'Utils/database_helpers.dart';
-import 'Utils/word.dart';
+import 'package:word_app_fl/Utils/database.dart';
 import 'Networking/NetworkCalls.dart';
+import 'package:word_app_fl/Blocs/wordList_bloc.dart';
 
 class WordCardController extends StatefulWidget {
 
@@ -15,6 +16,7 @@ class WordCardController extends StatefulWidget {
 
 class _WordCardControllerState extends State<WordCardController> {
 
+
   DatabaseHelper helper = DatabaseHelper.instance;
   bool _isWordAdded;
 
@@ -23,11 +25,11 @@ class _WordCardControllerState extends State<WordCardController> {
     if (widget.wordOfTheDay.selected == null) {
       _isWordAdded = false;
     } else {
-      if (widget.wordOfTheDay.selected.contains(widget.id)) {
-        _isWordAdded = true;
-      } else {
-        _isWordAdded = false;
-      }
+//      if (widget.wordOfTheDay.selected.contains(widget.id)) {
+//        _isWordAdded = true;
+//      } else {
+//        _isWordAdded = false;
+//      }
     }
     super.initState();
   }
@@ -200,24 +202,25 @@ class _WordCardControllerState extends State<WordCardController> {
   }
 
   modifyWordList(bool value) {
-    var copy;
-    if (widget.wordOfTheDay.selected != null) {
-      copy = List<int>.from(widget.wordOfTheDay.selected);
-      if (value == true) {
-        copy.add(widget.id);
-      } else {
-        copy.remove(widget.id);
-      }
-    } else {
-      copy = [];
-      copy.add(widget.id);
-    }
-    widget.wordOfTheDay.selected = copy;
-    helper.updateWord(widget.wordOfTheDay);
-    PageStorage.of(context).writeState(context, _isWordAdded,
-      identifier: ValueKey("isWordAdded"),
-    );
-    NetworkCalls.update(word: widget.wordOfTheDay);
+//    print("CardController id is $Widget.id");
+//    var copy;
+//    if (widget.wordOfTheDay.selected != null) {
+//      copy = List<int>.from(widget.wordOfTheDay.selected);
+//      if (value == true) {
+//        copy.add(widget.id);
+//      } else {
+//        copy.remove(widget.id);
+//      }
+//    } else {
+//      copy = [];
+//      copy.add(widget.id);
+//    }
+//    widget.wordOfTheDay.selected = copy;
+////    helper.updateWord(widget.wordOfTheDay);
+//    PageStorage.of(context).writeState(context, _isWordAdded,
+//      identifier: ValueKey("isWordAdded"),
+//    );
+//    NetworkCalls.update(word: widget.wordOfTheDay);
   }
 }
 

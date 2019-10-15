@@ -2,7 +2,7 @@ import 'dart:io';
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:path_provider/path_provider.dart';
-import 'word.dart';
+import '../Models/word.dart';
 
 final String tableWords = 'words';
 final String columnId = '_id';
@@ -96,11 +96,6 @@ class DatabaseHelper {
 
   Future<List<Word>> queryAllSelectedWords(int id) async {
     final db = await database;
-//    List<Map> maps = await db.query(tableWords,
-//        columns: [columnId, columnWord, columnDef, columnSynonyms, columnUsage, columnSelected],
-//        orderBy: "word",
-//        where: '$columnSelected = ?',
-//        whereArgs: [id]);
     var res = await db.rawQuery("SELECT * FROM words WHERE selected = ?", [2]);
     List<Word> list = res.map((c) => Word.fromMap(c)).toList();
     if (res.length > 0) {
@@ -108,23 +103,32 @@ class DatabaseHelper {
     }
     return null;
   }
-
-  Future<List<Word>> queryAllUnselectedWords() async {
-    final db = await database;
-    List<Map> maps = await db.query(tableWords,
-        columns: [columnId, columnWord, columnDef, columnSynonyms, columnUsage, columnSelected],
-        orderBy: "word",
-        where: '$columnSelected=false',
-        whereArgs: ["true"]);
-    List<Word> list = maps.map((c) => Word.fromMap(c)).toList();
-    if (maps.length > 0) {
-      return list;
-    }
-    return null;
-  }
+//
+//  Future<List<Word>> queryAllUnselectedWords() async {
+//    final db = await database;
+//    List<Map> maps = await db.query(tableWords,
+//        columns: [columnId, columnWord, columnDef, columnSynonyms, columnUsage, columnSelected],
+//        orderBy: "word",
+//        where: '$columnSelected=false',
+//        whereArgs: ["true"]);
+//    List<Word> list = maps.map((c) => Word.fromMap(c)).toList();
+//    if (maps.length > 0) {
+//      return list;
+//    }
+//    return null;
+//  }
 
   Future<int> updateWord(Word word) async {
     final db = await database;
-    return await db.update("words", word.toMap(), where: "_id = ?", whereArgs: [word.id]);
+    int id;
+    try {
+      id = await db.update("words",
+          word.toMap(),
+          where: "_id = ?",
+          whereArgs: [word.id]);
+    } catch (error) {
+      print(error);
+    }
+    return id;
   }
 }
