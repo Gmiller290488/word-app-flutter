@@ -41,6 +41,7 @@ class _WordTabControllerState extends State<WordTabController> {
 
   @override
   Widget build(BuildContext context) {
+    print(widget.wordOfTheDay);
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       theme: ThemeData.dark(),

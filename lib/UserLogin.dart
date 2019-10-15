@@ -35,7 +35,7 @@ class _UserLoginState extends State<UserLogin> {
 
   @override
   void initState() {
-    wordTabController = WordTabController(dbSelectedWords: dbSelectedWords, dbUnselectedWords: dbUnselectedWords, wordOfTheDay: registeredWordOfTheDay, id: id);
+    wordTabController = WordTabController(wordOfTheDay: guestWordOfTheDay, id: id);
     super.initState();
   }
 
@@ -190,14 +190,12 @@ class _UserLoginState extends State<UserLogin> {
         for (Word word in wordsJson) {
           print(word);
           database.insertWord(word);
-
-          // fix this:
-          guestWordOfTheDay = word;
-          print("get words $guestWordOfTheDay");
         }
       }
-    }
-    );
+    });
+    dbAllWords = await database.getAllWords();
+    guestWordOfTheDay = dbAllWords[0];
+    print(guestWordOfTheDay);
   }
 
 //  _queryDb() async {
@@ -273,7 +271,7 @@ class _UserLoginState extends State<UserLogin> {
     await _getRegisteredWordOfTheDay();
     await Navigator.push(
         context,
-        MaterialPageRoute(builder: (context) => WordTabController(dbSelectedWords: dbSelectedWords, dbUnselectedWords: dbUnselectedWords, wordOfTheDay: registeredWordOfTheDay, id: id))
+        MaterialPageRoute(builder: (context) => WordTabController(dbSelectedWords: dbSelectedWords, dbUnselectedWords: dbUnselectedWords, wordOfTheDay: guestWordOfTheDay, id: id))
     );
   }
 

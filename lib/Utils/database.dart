@@ -16,14 +16,18 @@ class Words extends Table {
   @UseMoor(tables: [Words])
   class MyDatabase extends _$MyDatabase {
 
-  MyDatabase() : super(FlutterQueryExecutor.inDatabaseFolder(path: 'db1.sqlite'));
+  MyDatabase() : super(FlutterQueryExecutor.inDatabaseFolder(path: 'db2.sqlite'));
 
   @override
-  int get schemaVersion => 4;
+  int get schemaVersion => 1;
 
   Future<List<Word>> getAllWords() => select(words).get();
 
   Stream<List<Word>> watchAllWords() => select(words).watch();
+
+  Stream<Word> watchOneWord(int id) {
+    return (select(words)..where((t) => t.id.equals(id))).watchSingle();
+  }
 
   Future insertWord(Word word) => into(words).insert(word);
 

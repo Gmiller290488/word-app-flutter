@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:word_app_fl/Utils/database.dart';
 import 'package:word_app_fl/Utils/database_helpers.dart';
 import 'package:word_app_fl/WordScreen.dart';
@@ -7,67 +8,69 @@ import 'package:word_app_fl/Blocs/bloc_provider.dart';
 import 'package:word_app_fl/Blocs/wordList_bloc.dart';
 import 'package:word_app_fl/Utils/shared_prefs_helpers.dart';
 
-//class WordListController extends StatelessWidget {
+
+//class WordCardController extends StatefulWidget {
+//
+//  final Word wordOfTheDay;
+//  final int id;
+//  WordCardController({ Key key, @required this.wordOfTheDay, @required this.id }) : super(key: key);
 //
 //  @override
-//  Widget build(BuildContext context) {
-//    return MaterialApp(
-//      title: "Words",
-//      theme: ThemeData.dark(),
-//      home: BlocProvider(
-//        bloc: WordListBloc(),
-//        child: WordListPage(title: "words"),
-//      )
-//    );
-//  }
-//
+//  _WordCardControllerState createState() => _WordCardControllerState();
 //}
-
-//class WordListPage extends StatefulWidget {
 //
-//  WordListPage({ @required this.title });
+//class _WordCardControllerState extends State<WordCardController> {
 //
-//  final String title;
 //
-//  @override
-//  _WordListPageState createState() => _WordListPageState();
-//}
-
-
-class WordListController extends StatelessWidget {
-  final WordListBloc wordListBloc = WordListBloc();
-//  int id;
-
+//  DatabaseHelper helper = DatabaseHelper.instance;
+//  bool _isWordAdded;
+//
 //  @override
 //  void initState() {
-//    super.initState();
-//    if (id == null) {
-//      getId();
-//    }
-//    _wordsListBloc = BlocProvider.of<WordListBloc>(context);
-//  }
-//
-//  getId() async {
-//    id = await SharedPrefsHelper.getId();
-//  }
+class WordListController extends StatefulWidget {
+
+  WordListController({Key key}) : super(key: key);
+
+  @override
+  _WordListControllerState createState() => _WordListControllerState();
+}
+
+class _WordListControllerState extends State<WordListController> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text("title"),
-        ),
-        body: Container(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: <Widget>[
-              Expanded(
-                child: StreamBuilder<List<Word>>(
-                  stream: wordListBloc.words,
-                  builder: (BuildContext context, AsyncSnapshot<List<Word>> snapshot) {
+    return MaterialApp(
+      title: "Words",
+      theme: ThemeData.dark(),
+      home: _buildWordList(context),
+    );
+  }
+}
+
+//  @override
+//  Widget build(BuildContext context) {
+//    return Scaffold(
+//      appBar: AppBar(
+//        title: Text("title"),
+//        ),
+    StreamBuilder<List<Word>> _buildWordList(BuildContext context) {
+  final database = Provider.of<MyDatabase>(context);
+  return StreamBuilder(
+    stream: database.watchAllWords(),
+    builder: (context, AsyncSnapshot<List<Word>> snapshot) {
+
+//        body: Container(
+//          child: Column(
+//            mainAxisAlignment: MainAxisAlignment.center,
+//            children: <Widget>[
+//              Expanded(
+//                child: StreamBuilder<List<Word>>(
+//                  stream: wordListBloc.words,
+//                  builder: (BuildContext context, AsyncSnapshot<List<Word>> snapshot) {
                     if (snapshot.hasData) {
                       print("has data");
                       List<Word> words = snapshot.data;
+                      words.removeWhere((Word word) => word.selected == false);
 
 //                      words.removeWhere((Word word) => !word.selected.contains(1));
 
@@ -171,15 +174,12 @@ class WordListController extends StatelessWidget {
                       );
                     }
                   }
-                )
-              )
-            ],
-          )
-        )
-      );
+  );
+
+
   }
 
-}
+
 
 
 //class WordListController extends StatefulWidget {
