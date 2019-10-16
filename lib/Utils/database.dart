@@ -11,6 +11,7 @@ class Words extends Table {
 //  ListColumn get selected => integer().nullable()();
   TextColumn get synonyms => text().withLength(min: 2, max: 200)();
   TextColumn get usage => text().withLength(min: 2, max: 200)();
+  BoolColumn get expanded => boolean().withDefault(Constant(false))();
   }
 
   @UseMoor(tables: [Words])

@@ -14,13 +14,15 @@ class Word extends DataClass implements Insertable<Word> {
   final bool selected;
   final String synonyms;
   final String usage;
+  final bool expanded;
   Word(
       {@required this.id,
       @required this.word,
       @required this.definition,
       @required this.selected,
       @required this.synonyms,
-      @required this.usage});
+      @required this.usage,
+      @required this.expanded});
   factory Word.fromData(Map<String, dynamic> data, GeneratedDatabase db,
       {String prefix}) {
     final effectivePrefix = prefix ?? '';
@@ -38,6 +40,8 @@ class Word extends DataClass implements Insertable<Word> {
           .mapFromDatabaseResponse(data['${effectivePrefix}synonyms']),
       usage:
           stringType.mapFromDatabaseResponse(data['${effectivePrefix}usage']),
+      expanded:
+          boolType.mapFromDatabaseResponse(data['${effectivePrefix}expanded']),
     );
   }
   factory Word.fromJson(Map<String, dynamic> json,
@@ -49,6 +53,7 @@ class Word extends DataClass implements Insertable<Word> {
       selected: serializer.fromJson<bool>(json['selected']),
       synonyms: serializer.fromJson<String>(json['synonyms']),
       usage: serializer.fromJson<String>(json['usage']),
+      expanded: serializer.fromJson<bool>(json['expanded']),
     );
   }
   @override
@@ -61,6 +66,7 @@ class Word extends DataClass implements Insertable<Word> {
       'selected': serializer.toJson<bool>(selected),
       'synonyms': serializer.toJson<String>(synonyms),
       'usage': serializer.toJson<String>(usage),
+      'expanded': serializer.toJson<bool>(expanded),
     };
   }
 
@@ -80,6 +86,9 @@ class Word extends DataClass implements Insertable<Word> {
           : Value(synonyms),
       usage:
           usage == null && nullToAbsent ? const Value.absent() : Value(usage),
+      expanded: expanded == null && nullToAbsent
+          ? const Value.absent()
+          : Value(expanded),
     );
   }
 
@@ -89,7 +98,8 @@ class Word extends DataClass implements Insertable<Word> {
           String definition,
           bool selected,
           String synonyms,
-          String usage}) =>
+          String usage,
+          bool expanded}) =>
       Word(
         id: id ?? this.id,
         word: word ?? this.word,
@@ -97,6 +107,7 @@ class Word extends DataClass implements Insertable<Word> {
         selected: selected ?? this.selected,
         synonyms: synonyms ?? this.synonyms,
         usage: usage ?? this.usage,
+        expanded: expanded ?? this.expanded,
       );
   @override
   String toString() {
@@ -106,7 +117,8 @@ class Word extends DataClass implements Insertable<Word> {
           ..write('definition: $definition, ')
           ..write('selected: $selected, ')
           ..write('synonyms: $synonyms, ')
-          ..write('usage: $usage')
+          ..write('usage: $usage, ')
+          ..write('expanded: $expanded')
           ..write(')'))
         .toString();
   }
@@ -118,8 +130,10 @@ class Word extends DataClass implements Insertable<Word> {
           word.hashCode,
           $mrjc(
               definition.hashCode,
-              $mrjc(selected.hashCode,
-                  $mrjc(synonyms.hashCode, usage.hashCode))))));
+              $mrjc(
+                  selected.hashCode,
+                  $mrjc(synonyms.hashCode,
+                      $mrjc(usage.hashCode, expanded.hashCode)))))));
   @override
   bool operator ==(other) =>
       identical(this, other) ||
@@ -129,7 +143,8 @@ class Word extends DataClass implements Insertable<Word> {
           other.definition == this.definition &&
           other.selected == this.selected &&
           other.synonyms == this.synonyms &&
-          other.usage == this.usage);
+          other.usage == this.usage &&
+          other.expanded == this.expanded);
 }
 
 class WordsCompanion extends UpdateCompanion<Word> {
@@ -139,6 +154,7 @@ class WordsCompanion extends UpdateCompanion<Word> {
   final Value<bool> selected;
   final Value<String> synonyms;
   final Value<String> usage;
+  final Value<bool> expanded;
   const WordsCompanion({
     this.id = const Value.absent(),
     this.word = const Value.absent(),
@@ -146,6 +162,7 @@ class WordsCompanion extends UpdateCompanion<Word> {
     this.selected = const Value.absent(),
     this.synonyms = const Value.absent(),
     this.usage = const Value.absent(),
+    this.expanded = const Value.absent(),
   });
   WordsCompanion.insert({
     this.id = const Value.absent(),
@@ -154,6 +171,7 @@ class WordsCompanion extends UpdateCompanion<Word> {
     this.selected = const Value.absent(),
     @required String synonyms,
     @required String usage,
+    this.expanded = const Value.absent(),
   })  : word = Value(word),
         definition = Value(definition),
         synonyms = Value(synonyms),
@@ -164,7 +182,8 @@ class WordsCompanion extends UpdateCompanion<Word> {
       Value<String> definition,
       Value<bool> selected,
       Value<String> synonyms,
-      Value<String> usage}) {
+      Value<String> usage,
+      Value<bool> expanded}) {
     return WordsCompanion(
       id: id ?? this.id,
       word: word ?? this.word,
@@ -172,6 +191,7 @@ class WordsCompanion extends UpdateCompanion<Word> {
       selected: selected ?? this.selected,
       synonyms: synonyms ?? this.synonyms,
       usage: usage ?? this.usage,
+      expanded: expanded ?? this.expanded,
     );
   }
 }
@@ -234,9 +254,18 @@ class $WordsTable extends Words with TableInfo<$WordsTable, Word> {
         minTextLength: 2, maxTextLength: 200);
   }
 
+  final VerificationMeta _expandedMeta = const VerificationMeta('expanded');
+  GeneratedBoolColumn _expanded;
+  @override
+  GeneratedBoolColumn get expanded => _expanded ??= _constructExpanded();
+  GeneratedBoolColumn _constructExpanded() {
+    return GeneratedBoolColumn('expanded', $tableName, false,
+        defaultValue: Constant(false));
+  }
+
   @override
   List<GeneratedColumn> get $columns =>
-      [id, word, definition, selected, synonyms, usage];
+      [id, word, definition, selected, synonyms, usage, expanded];
   @override
   $WordsTable get asDslTable => this;
   @override
@@ -282,6 +311,12 @@ class $WordsTable extends Words with TableInfo<$WordsTable, Word> {
     } else if (usage.isRequired && isInserting) {
       context.missing(_usageMeta);
     }
+    if (d.expanded.present) {
+      context.handle(_expandedMeta,
+          expanded.isAcceptableValue(d.expanded.value, _expandedMeta));
+    } else if (expanded.isRequired && isInserting) {
+      context.missing(_expandedMeta);
+    }
     return context;
   }
 
@@ -313,6 +348,9 @@ class $WordsTable extends Words with TableInfo<$WordsTable, Word> {
     }
     if (d.usage.present) {
       map['usage'] = Variable<String, StringType>(d.usage.value);
+    }
+    if (d.expanded.present) {
+      map['expanded'] = Variable<bool, BoolType>(d.expanded.value);
     }
     return map;
   }

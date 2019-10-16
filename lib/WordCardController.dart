@@ -19,6 +19,7 @@ class _WordCardControllerState extends State<WordCardController> {
 
 
   DatabaseHelper helper = DatabaseHelper.instance;
+
 //  bool _isWordAdded = true;
 
 //  @override
@@ -178,32 +179,26 @@ class _WordCardControllerState extends State<WordCardController> {
                                           ],
                                         ),
                                         Spacer(),
-//                            ClipRRect(
-//                                borderRadius: BorderRadius.vertical(
-//                                    bottom: Radius.circular(10)),
-//                                child:
+                            ClipRRect(
+                                borderRadius: BorderRadius.vertical(
+                                    bottom: Radius.circular(10)),
+                                child:
                                         Column(
                                             mainAxisSize: MainAxisSize.max,
                                             children: <Widget>[
-//                                    Container(
-//                                        padding: EdgeInsets.all(12),
-//                                        color: Colors.grey.withOpacity(0.6),
-//                                        child:
-//                                        Row(
-//                                            mainAxisSize: MainAxisSize.max,
-//                                            mainAxisAlignment: MainAxisAlignment
-//                                                .center,
-//                                            children: <Widget>[
+                                    Container(
+                                        padding: EdgeInsets.all(12),
+                                        color: Colors.grey.withOpacity(0.6),
+                                        child:
+                                        Row(
+                                            mainAxisSize: MainAxisSize.max,
+                                            mainAxisAlignment: MainAxisAlignment
+                                                .center,
+                                            children: <Widget>[
                                               Text("ADD TO YOUR WORD LIST?"),
                                               Switch(
                                                   value: snapshot.data.selected,
                                                   onChanged: (value) {
-                                                    print(snapshot.data.selected);
-                                                    print(value);
-//                                                    setState(() {
-//                                                      _isWordAdded = value;
-//                                                      modifyWordList(value);
-//                                                    });
                                                     database.updateWord(
                                                         snapshot.data
                                                             .copyWith(
@@ -215,45 +210,20 @@ class _WordCardControllerState extends State<WordCardController> {
 
                                         )
 
-                                      ])
+                            )
+                              ]
+                            )
                               )
-                          )
+                          ]
                       )
                   )
-              );
+              )
+          )
+          )
+          );
           }
           return CircularProgressIndicator();
         });
   }
-
-
 }
-
-
-//  modifyWordList(bool value) {
-//
-//
-//
-////    print("CardController id is $Widget.id");
-////    var copy;
-////    if (widget.wordOfTheDay.selected != null) {
-////      copy = List<int>.from(widget.wordOfTheDay.selected);
-////      if (value == true) {
-////        copy.add(widget.id);
-////      } else {
-////        copy.remove(widget.id);
-////      }
-////    } else {
-////      copy = [];
-////      copy.add(widget.id);
-////    }
-////    widget.wordOfTheDay.selected = copy;
-//////    helper.updateWord(widget.wordOfTheDay);
-////    PageStorage.of(context).writeState(context, _isWordAdded,
-////      identifier: ValueKey("isWordAdded"),
-////    );
-////    NetworkCalls.update(word: widget.wordOfTheDay);
-//  }
-//}
-
 
